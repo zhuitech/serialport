@@ -141,17 +141,20 @@ JNIEXPORT jobject JNICALL Java_android_1serialport_1api_SerialPort_open
 		cfsetospeed(&cfg, speed);
 
 		/* More attribute set */
+		// 奇偶校验，0=无, 1=奇校验, 2=偶校验
 		switch (parity) {
 			case 0: break;
-			case 1: cfg.c_cflag |= PARENB; break;
-			case 2: cfg.c_cflag &= ~PARODD; break;
+			case 1: cfg.c_cflag |= PARENB; cfg.c_cflag |= PARODD; cfg.c_iflag |= (INPCK | ISTRIP); break;
+            case 2: cfg.c_cflag |= PARENB; cfg.c_cflag &= ~PARODD; cfg.c_iflag |= (INPCK | ISTRIP); break;
 		}
+		// 数据位
 		switch (dataBits) {
 			case 5: cfg.c_cflag |= CS5; break;
 			case 6: cfg.c_cflag |= CS6; break;
 			case 7: cfg.c_cflag |= CS7; break;
 			case 8: cfg.c_cflag |= CS8; break;
 		}
+		// 停止位
 		switch (stopBit) {
 			case 1: cfg.c_cflag &= ~CSTOPB; break;
 			case 2: cfg.c_cflag |= CSTOPB; break;
